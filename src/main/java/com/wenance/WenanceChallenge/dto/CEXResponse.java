@@ -1,4 +1,4 @@
-package com.wenance.WenanceChallenge.model;
+package com.wenance.WenanceChallenge.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

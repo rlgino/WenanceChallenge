@@ -1,6 +1,6 @@
 package com.wenance.WenanceChallenge.services;
 
-import com.wenance.WenanceChallenge.model.CEXResponse;
+import com.wenance.WenanceChallenge.dto.CEXResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
