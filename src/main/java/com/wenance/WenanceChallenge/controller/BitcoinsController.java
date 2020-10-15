@@ -23,10 +23,10 @@ public class BitcoinsController {
 
     @GetMapping(path = "/find-one", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getPriceOnDate(@RequestBody ChallengeRequest bodyRequest){
-        if (bodyRequest.getPattern().isEmpty())
+        if (bodyRequest.getPattern() == null || bodyRequest.getPattern().isEmpty())
             return new ResponseEntity<>("The field patter is required", HttpStatus.BAD_REQUEST);
-        if (bodyRequest.getDate().isEmpty())
-            return new ResponseEntity<>("Date field is required", HttpStatus.BAD_REQUEST);
+        if (bodyRequest.getDate() == null || bodyRequest.getDate().isEmpty())
+            return new ResponseEntity<>("The field date is required", HttpStatus.BAD_REQUEST);
 
         try{
             final Date now = new SimpleDateFormat(bodyRequest.getPattern()).parse(bodyRequest.getDate());
