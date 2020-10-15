@@ -15,19 +15,28 @@ public class BitcoinsFinder {
     @Autowired
     BitcoinsRepository repository;
 
-    public BigDecimal findBitcoinPrice(final Date date){
+    public BitcoinSnapshot findBitcoinPrice(final Date date){
         final Iterator<BitcoinSnapshot> bitcoinsData = this.repository.findAll().iterator();
         Stream<BitcoinSnapshot> targetStream = StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(bitcoinsData, Spliterator.ORDERED),
                 false);
-        final Optional<BitcoinSnapshot> result = targetStream.filter(snapshot -> snapshot.getCreationDateTime().getTime() == date.getTime()).findAny();
+        final Optional<BitcoinSnapshot> result = targetStream
+                .filter(snapshot -> snapshot.getCreationDateTime().getTime() == date.getTime())
+                .findAny();
 
-        if (result.isPresent())
-            return result.get().getPrice();;
-        return BigDecimal.ZERO;
+        return result.orElseGet(BitcoinSnapshot::new);
     }
 
-    public BigDecimal findBitcoinPrice(Date from, Date to){
-        return BigDecimal.ZERO;
+    public BitcoinSnapshot findBitcoinPrice(final Date dateFrom, final Date dateTo){
+        final Iterator<BitcoinSnapshot> bitcoinsData = this.repository.findAll().iterator();
+        Stream<BitcoinSnapshot> targetStream = StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(bitcoinsData, Spliterator.ORDERED),
+                false);
+        final Optional<BitcoinSnapshot> result = targetStream
+                .filter(snapshot -> snapshot.getCreationDateTime().getTime() > dateFrom.getTime() && snapshot.getCreationDateTime().getTime() < dateTo.getTime())
+                .max(Comparator.comparing(BitcoinSnapshot::getPrice));
+
+        return result.orElseGet(BitcoinSnapshot::new);
     }
+
 }
