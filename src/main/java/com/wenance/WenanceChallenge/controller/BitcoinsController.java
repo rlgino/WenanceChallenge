@@ -21,9 +21,9 @@ public class BitcoinsController {
     private BitcoinsFinder bitcoinsFinder;
 
     @GetMapping(path = "/", produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getPrinceOnDate(@RequestBody ChallengeRequest bodyRequest){
+    public ResponseEntity<Object> getPriceOnDate(@RequestBody ChallengeRequest bodyRequest){
         try{
-            final Date now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse("2020-10-14 18:02:34.563");
+            final Date now = new SimpleDateFormat(bodyRequest.getPattern()).parse(bodyRequest.getDate());
             final BigDecimal result = bitcoinsFinder.findBitcoinPrice(now);
             return new ResponseEntity<>("The bitcoin price this moment was: " + result.toString(), HttpStatus.OK);
         } catch (ParseException e){

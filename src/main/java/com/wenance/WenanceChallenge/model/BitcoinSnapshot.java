@@ -1,26 +1,34 @@
 package com.wenance.WenanceChallenge.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name = "BITCOIN_SNAPSHOT")
+@Table(name = "BITCOIN_SNAPSHOT", uniqueConstraints =  @UniqueConstraint(columnNames = {"creationDateTime"}))
 public class BitcoinSnapshot {
-    @Id()
-    private Date date;
+    @Id
+    @GeneratedValue
+    Integer id;
+    @Temporal(TemporalType.TIMESTAMP)
+    Date creationDateTime;
     @Column()
     private BigDecimal price;
 
-    public Date getDate() {
-        return date;
+    public Integer getId() {
+        return id;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Date getCreationDateTime() {
+        return creationDateTime;
+    }
+
+    public void setCreationDateTime(Date creationDateTime) {
+        this.creationDateTime = creationDateTime;
     }
 
     public BigDecimal getPrice() {

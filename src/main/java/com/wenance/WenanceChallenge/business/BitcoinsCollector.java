@@ -32,7 +32,7 @@ public class BitcoinsCollector {
 
     private BitcoinSnapshot converResponse(CEXResponse currentValue) {
         final BitcoinSnapshot snapshot = new BitcoinSnapshot();
-        snapshot.setDate(new Date());
+        snapshot.setCreationDateTime(new Date());
         snapshot.setPrice(currentValue.getLprice());
         return snapshot;
     }

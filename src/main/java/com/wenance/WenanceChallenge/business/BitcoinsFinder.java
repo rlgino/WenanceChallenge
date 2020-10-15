@@ -6,19 +6,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Component
 public class BitcoinsFinder {
     @Autowired
     BitcoinsRepository repository;
 
-    public BigDecimal findBitcoinPrice(Date date){
-        final List<BitcoinSnapshot> result = this.repository.findAll();
-        if (!result.isEmpty())
-            return result.get(0).getPrice();
-        System.out.println("No hay registros");
+    public BigDecimal findBitcoinPrice(final Date date){
+        final Iterator<BitcoinSnapshot> bitcoinsData = this.repository.findAll().iterator();
+        Stream<BitcoinSnapshot> targetStream = StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(bitcoinsData, Spliterator.ORDERED),
+                false);
+        final Optional<BitcoinSnapshot> result = targetStream.filter(snapshot -> snapshot.getCreationDateTime().getTime() == date.getTime()).findAny();
+
+        if (result.isPresent())
+            return result.get().getPrice();;
         return BigDecimal.ZERO;
     }
 
