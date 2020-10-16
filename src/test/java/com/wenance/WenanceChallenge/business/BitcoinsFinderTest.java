@@ -10,10 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -27,7 +24,7 @@ public class BitcoinsFinderTest {
     BitcoinsFinder finder;
 
     @Test
-    public void findBitcoinPriceTest_ShouldPass() throws ParseException {
+    public void findBitcoinPriceTest_ShouldFind() throws ParseException {
         // Setup
         final Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse("2020-10-15 16:18:53.561");
 
@@ -50,5 +47,22 @@ public class BitcoinsFinderTest {
         // Verify
         assertThat(bitcoinPrice.isPresent()).isTrue();
         assertThat(bitcoinPrice.get().getPrice()).isEqualTo(new BigDecimal(3));
+    }
+
+    @Test
+    public void findBitcoinPriceTest_ShouldnotFind() throws ParseException {
+        // Setup
+        final BitcoinSnapshot snapshot1 = new BitcoinSnapshot();
+        snapshot1.setCreationDateTime(new Date());
+        snapshot1.setPrice(new BigDecimal(1));
+        final List<BitcoinSnapshot> snapshotsList = Collections.singletonList(snapshot1);
+
+        when(repository.findAll()).thenReturn(snapshotsList);
+
+        // Execute
+        final Optional<BitcoinSnapshot> bitcoinPrice = finder.findBitcoinPrice(new Date());
+
+        // Verify
+        assertThat(bitcoinPrice.isPresent()).isFalse();
     }
 }
