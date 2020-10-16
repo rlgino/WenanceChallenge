@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 
 @RestController
 public class BitcoinsController {
@@ -30,10 +30,15 @@ public class BitcoinsController {
 
         try{
             final Date now = new SimpleDateFormat(bodyRequest.getPattern()).parse(bodyRequest.getDate());
-            final BitcoinSnapshot result = bitcoinsFinder.findBitcoinPrice(now);
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            final Optional<BitcoinSnapshot> result = bitcoinsFinder.findBitcoinPrice(now);
+            if (result.isPresent())
+                return new ResponseEntity<>(result.get(), HttpStatus.OK);
+
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         } catch (ParseException e){
             return new ResponseEntity<>("Error in data input: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -47,8 +52,11 @@ public class BitcoinsController {
         try{
             final Date from = new SimpleDateFormat(bodyRequest.getPattern()).parse(bodyRequest.getDateFrom());
             final Date to = new SimpleDateFormat(bodyRequest.getPattern()).parse(bodyRequest.getDateTo());
-            final BitcoinSnapshot result = bitcoinsFinder.findBitcoinPrice(from, to);
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            final Optional<BitcoinSnapshot> result = bitcoinsFinder.findBitcoinPrice(from, to);
+            if (result.isPresent())
+                return new ResponseEntity<>(result.get(), HttpStatus.OK);
+
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         } catch (ParseException e){
             return new ResponseEntity<>("Error in data input: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }

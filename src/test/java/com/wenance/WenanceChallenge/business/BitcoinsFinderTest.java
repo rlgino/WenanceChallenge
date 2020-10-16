@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -44,9 +45,10 @@ public class BitcoinsFinderTest {
         when(repository.findAll()).thenReturn(snapshotsList);
 
         // Execute
-        final BitcoinSnapshot bitcoinPrice = finder.findBitcoinPrice(date);
+        final Optional<BitcoinSnapshot> bitcoinPrice = finder.findBitcoinPrice(date);
 
         // Verify
-        assertThat(bitcoinPrice.getPrice()).isEqualTo(new BigDecimal(3));
+        assertThat(bitcoinPrice.isPresent()).isTrue();
+        assertThat(bitcoinPrice.get().getPrice()).isEqualTo(new BigDecimal(3));
     }
 }

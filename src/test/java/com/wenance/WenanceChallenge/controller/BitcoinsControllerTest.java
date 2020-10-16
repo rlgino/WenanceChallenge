@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -34,7 +35,7 @@ public class BitcoinsControllerTest {
         snapshot.setId(1);
         snapshot.setPrice(BigDecimal.TEN);
         snapshot.setCreationDateTime(date);
-        when(finder.findBitcoinPrice(date)).thenReturn(snapshot);
+        when(finder.findBitcoinPrice(date)).thenReturn(Optional.of(snapshot));
 
         // Execute
         final ChallengeRequest request = new ChallengeRequest();
@@ -48,6 +49,25 @@ public class BitcoinsControllerTest {
         BitcoinSnapshot snapshotResult = (BitcoinSnapshot) response.getBody();
         assertThat(snapshotResult).isNotNull();
         assertThat(snapshotResult.getPrice()).isEqualTo(BigDecimal.TEN);
+    }
+
+    @Test
+    public void findBitcoinPrice_ShouldBeNoContent() throws ParseException {
+        // setup
+        final Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse("2020-10-15 16:18:53.561");
+        when(finder.findBitcoinPrice(date)).thenReturn(Optional.empty());
+
+        // Execute
+        final ChallengeRequest request = new ChallengeRequest();
+        request.setPattern("yyyy-MM-dd HH:mm:ss.SSS");
+        request.setDate("2020-10-15 16:18:53.561");
+
+        final ResponseEntity<Object> response = controller.getPriceOnDate(request);
+
+        // Verify
+        assertThat(response.getStatusCode().value()).isEqualTo(204);
+        BitcoinSnapshot snapshotResult = (BitcoinSnapshot) response.getBody();
+        assertThat(snapshotResult).isNull();
     }
 
     @Test

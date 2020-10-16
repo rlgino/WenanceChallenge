@@ -16,8 +16,6 @@ public class BitcoinsCollectorJob {
 
     @Scheduled(fixedRate = 10000) // Execution to 10 seconds
     public void findBitcoinPrice(){
-        log.info("Executing...");
         bitcoinsCollector.collectBitcoinPrice();
-        log.info("Success...");
     }
 }

@@ -24,10 +24,14 @@ public class BitcoinsCollector {
     private BitcoinsRepository repository;
 
     public void collectBitcoinPrice() {
-        final CEXResponse currentValue = cexService.getCurrentValue();
-        log.info("The value is: " + currentValue.getLprice().toString());
-        BitcoinSnapshot snapshot = converResponse(currentValue);
-        repository.save(snapshot);
+        try {
+            final CEXResponse currentValue = cexService.getCurrentValue();
+            BitcoinSnapshot snapshot = converResponse(currentValue);
+            repository.save(snapshot);
+            log.error("Price saved to date: " + snapshot.getCreationDateTime());
+        }catch (Exception e){
+            log.error("Error collecting btc price: " + e.getMessage());
+        }
     }
 
     private BitcoinSnapshot converResponse(CEXResponse currentValue) {
