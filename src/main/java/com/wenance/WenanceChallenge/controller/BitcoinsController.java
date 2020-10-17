@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,7 +53,12 @@ public class BitcoinsController {
         try{
             final Date from = new SimpleDateFormat(bodyRequest.getPattern()).parse(bodyRequest.getDateFrom());
             final Date to = new SimpleDateFormat(bodyRequest.getPattern()).parse(bodyRequest.getDateTo());
-            final Optional<BitcoinSnapshot> result = bitcoinsFinder.findBitcoinPrice(from, to);
+
+            final BigDecimal average = bitcoinsFinder.findBitcoinAveragePrice(from, to);
+            if(average == null)
+                return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+
+            final Optional<BitcoinSnapshot> result = bitcoinsFinder.findMaxBitcoinPrice(from, to);
             if (result.isPresent())
                 return new ResponseEntity<>(result.get(), HttpStatus.OK);
 
@@ -60,5 +66,9 @@ public class BitcoinsController {
         } catch (ParseException e){
             return new ResponseEntity<>("Error in data input: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public class MaxResult {
+
     }
 }
