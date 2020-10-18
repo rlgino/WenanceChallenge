@@ -28,7 +28,7 @@ public class BitcoinsCollector {
             final CEXResponse currentValue = cexService.getCurrentValue();
             BitcoinSnapshot snapshot = converResponse(currentValue);
             repository.save(snapshot);
-            log.error("Price saved to date: " + snapshot.getCreationDateTime());
+            log.info("Price saved to date: " + snapshot.getCreationDateTime());
         }catch (Exception e){
             log.error("Error collecting btc price: " + e.getMessage());
         }
