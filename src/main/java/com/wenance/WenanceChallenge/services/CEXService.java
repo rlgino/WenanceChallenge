@@ -1,18 +1,14 @@
 package com.wenance.WenanceChallenge.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wenance.WenanceChallenge.dto.CEXResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.codec.json.Jackson2JsonDecoder;
+import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class CEXService {
@@ -20,25 +16,23 @@ public class CEXService {
     private final String baseUSD = "/api/last_price/BTC/USD";
 
     @Autowired
-    private RestTemplate restTemplate;
+    private WebClient.Builder webClientBuilder;
 
     @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        restTemplate = builder.rootUri(currencyURL).build();
-
-        List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        converter.setSupportedMediaTypes(Collections.singletonList(MediaType.ALL));
-        messageConverters.add(converter);
-
-        restTemplate.setMessageConverters(messageConverters);
-
-        return restTemplate;
+    public WebClient.Builder webClientBuilder() {
+        return WebClient.builder();
     }
 
     public CEXResponse getCurrentValue() {
-
-        return this.restTemplate
-                .getForObject(baseUSD, CEXResponse.class);
+        return this.webClientBuilder.codecs(clientDefaultCodecsConfigurer -> {
+                clientDefaultCodecsConfigurer
+                        .defaultCodecs()
+                        .jackson2JsonEncoder(new Jackson2JsonEncoder(new ObjectMapper(), MediaType.ALL));
+                clientDefaultCodecsConfigurer
+                        .defaultCodecs()
+                        .jackson2JsonDecoder(new Jackson2JsonDecoder(new ObjectMapper(), MediaType.ALL));
+            }).baseUrl(currencyURL).build()
+                .get().uri(baseUSD).accept(MediaType.ALL)
+                .retrieve().bodyToMono(CEXResponse.class).block();
     }
 }
