@@ -46,7 +46,7 @@ public class BitcoinsControllerTest {
 
         // Verify
         assertThat(response.getStatusCode().value()).isEqualTo(200);
-        BitcoinSnapshot snapshotResult = (BitcoinSnapshot) response.getBody();
+        BitcoinsController.BitcoinPriceResponse snapshotResult = (BitcoinsController.BitcoinPriceResponse) response.getBody();
         assertThat(snapshotResult).isNotNull();
         assertThat(snapshotResult.getPrice()).isEqualTo(BigDecimal.TEN);
     }
@@ -71,7 +71,7 @@ public class BitcoinsControllerTest {
     }
 
     @Test
-    public void findBitcoinPrice_ShouldBeFailParser() throws ParseException {
+    public void findBitcoinPrice_ShouldBeFailParser() {
         // setup
         final ChallengeRequest request = new ChallengeRequest();
         request.setPattern("yyyy-MM-dd HH:mm:ss.SSS");
@@ -87,7 +87,7 @@ public class BitcoinsControllerTest {
     }
 
     @Test
-    public void findBitcoinPrice_ShouldBeFailPattern() throws ParseException {
+    public void findBitcoinPrice_ShouldBeFailPattern() {
         // setup
         final ChallengeRequest request = new ChallengeRequest();
         request.setPattern("");
@@ -102,7 +102,7 @@ public class BitcoinsControllerTest {
     }
 
     @Test
-    public void findBitcoinPrice_ShouldBeFailDate() throws ParseException {
+    public void findBitcoinPrice_ShouldBeFailDate() {
         // setup
         final ChallengeRequest request = new ChallengeRequest();
         request.setPattern("yyyy-MM-dd");

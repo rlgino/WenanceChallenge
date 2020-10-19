@@ -25,10 +25,10 @@ public class BitcoinsController {
 
     @GetMapping(path = "/find-one", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getPriceOnDate(@RequestBody ChallengeRequest bodyRequest){
-        if (bodyRequest.getPattern() == null || bodyRequest.getPattern().isEmpty())
-            return new ResponseEntity<>("The field patter is required", HttpStatus.BAD_REQUEST);
-        if (bodyRequest.getDate() == null || bodyRequest.getDate().isEmpty())
-            return new ResponseEntity<>("The field date is required", HttpStatus.BAD_REQUEST);
+
+        String validationError = getFindOneValidationMsg(bodyRequest);
+        if (validationError != null)
+            return new ResponseEntity<>(validationError, HttpStatus.BAD_REQUEST);
 
         try{
             final Date now = new SimpleDateFormat(bodyRequest.getPattern()).parse(bodyRequest.getDate());
@@ -48,6 +48,22 @@ public class BitcoinsController {
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * Validate the request of the find-one method. The fields validated are:
+     * Pattern
+     * Date
+     * @param bodyRequest of find-one method
+     * @return the message of error or null
+     */
+    private String getFindOneValidationMsg(ChallengeRequest bodyRequest) {
+        if (bodyRequest.getPattern() == null || bodyRequest.getPattern().isEmpty())
+            return "The field patter is required";
+        if (bodyRequest.getDate() == null || bodyRequest.getDate().isEmpty())
+            return "The field date is required";
+
+        return null;
     }
 
     @GetMapping(path = "/find-detail", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
